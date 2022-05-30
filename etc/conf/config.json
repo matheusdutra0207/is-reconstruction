@@ -1,0 +1,9 @@
+{
+    "broker_uri": "amqp://10.10.3.188:30000",
+    "detection":{
+        "id":5,
+        "reconstruction_for_only_one_camera":"True",
+        "detection_type":"ArUco",
+        "time_wait_for_detection":0.0
+    }
+}
