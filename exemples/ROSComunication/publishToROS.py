@@ -8,14 +8,14 @@ import random
 # ROS
 import rospy
 from geometry_msgs.msg import PoseWithCovariance
+from tf.transformations import quaternion_from_euler
 
 # IS
 from is_wire.core import Channel, Subscription
-import numpy as np
 from is_msgs.camera_pb2 import FrameTransformation
 
 #  my own
-from stream_channel import StreamChannel
+from streamChannel import StreamChannel
 
 
 def getPoseReconstruction():
@@ -32,18 +32,21 @@ def getPoseReconstruction():
         return message
 
 
-def publishTORos():
+def publishToRos():
     rospy.init_node('is')
     pub_pose = rospy.Publisher("~vo", PoseWithCovariance, queue_size=100)
     rate = rospy.Rate(15) # 20hz
     while not rospy.is_shutdown():
         try: 
             position_reconstruction = getPoseReconstruction()
-
+            quaternion = quaternion_from_euler(0, 0, position_reconstruction[2])
             pose = PoseWithCovariance()
             pose.pose.position.x = position_reconstruction[0]
             pose.pose.position.y = position_reconstruction[1]
-            pose.pose.orientation.z = position_reconstruction[2]
+            pose.pose.orientation.z = quaternion[2]
+            pose.pose.orientation.w = quaternion[3]
+
+
             covarianceIs = 0.14
 
             pose.covariance = np.array([covarianceIs,   0,   0,   0,   0,   0,
@@ -66,6 +69,6 @@ if __name__ == '__main__':
     subscription.subscribe(topic=f"localization.{aruco_id}.aruco")
 
     try:
-        publishTORos()
+        publishToRos()
     except rospy.ROSInterruptException:
         pass
