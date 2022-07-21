@@ -3,11 +3,10 @@
 
 # Python
 import numpy as np
-import random
 
 # ROS
 import rospy
-from geometry_msgs.msg import PoseWithCovariance
+from geometry_msgs.msg import PoseWithCovarianceStamped
 from tf.transformations import quaternion_from_euler
 
 # IS
@@ -34,22 +33,24 @@ def getPoseReconstruction():
 
 def publishToRos():
     rospy.init_node('is')
-    pub_pose = rospy.Publisher("~vo", PoseWithCovariance, queue_size=100)
-    rate = rospy.Rate(15) # 20hz
+    pub_pose = rospy.Publisher("~vo", PoseWithCovarianceStamped, queue_size=100)
+    rate = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
         try: 
             position_reconstruction = getPoseReconstruction()
             quaternion = quaternion_from_euler(0, 0, position_reconstruction[2])
-            pose = PoseWithCovariance()
-            pose.pose.position.x = position_reconstruction[0]
-            pose.pose.position.y = position_reconstruction[1]
-            pose.pose.orientation.z = quaternion[2]
-            pose.pose.orientation.w = quaternion[3]
+            pose = PoseWithCovarianceStamped()
+            pose.header.stamp = rospy.Time.now()
+            pose.header.frame_id = "map"
+            pose.pose.pose.position.x = position_reconstruction[0]
+            pose.pose.pose.position.y = position_reconstruction[1]
+            pose.pose.pose.orientation.z = quaternion[2]
+            pose.pose.pose.orientation.w = quaternion[3]
 
 
             covarianceIs = 0.14
 
-            pose.covariance = np.array([covarianceIs,   0,   0,   0,   0,   0,
+            pose.pose.covariance = np.array([covarianceIs,   0,   0,   0,   0,   0,
                                     0,   covarianceIs,   0,   0,   0,   0,
                                     0,   0,   covarianceIs,   0,   0,   0,
                                     0,   0,   0,   covarianceIs,   0,   0,
