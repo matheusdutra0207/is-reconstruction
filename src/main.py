@@ -20,6 +20,7 @@ import math
 from math import pi
 
 from subscription_manager import GetAvalibleCamera, SubscriptionDetection
+import glob
 
 def camera_parameters(file):
     camera_data = json.load(open(file))
@@ -33,6 +34,20 @@ def camera_parameters(file):
     T = tf[:3, 3].reshape(3, 1)
     dis = np.array(camera_data['distortion']['doubles'])
     return K, R, T, res, dis
+
+class LoadCameraParameters:
+
+    def __init__(self, calibration, cameraID): 
+        camera_data = json.load(open(calibration))
+        self.cameraID = cameraID
+        self.K = np.array(camera_data['intrinsic']['doubles']).reshape(3, 3)
+        self.res = [camera_data['resolution']['width'],
+                    camera_data['resolution']['height']]
+        self.tf = np.array(camera_data['extrinsic']['tf']['doubles']).reshape(4, 4)
+        self.R = self.tf[:3, :3]
+        self.T = self.tf[:3, 3].reshape(3, 1)
+        self.dis = np.array(camera_data['distortion']['doubles'])        
+
 
 def sort_corners (ids,corners):
     ind = np.argsort(ids[:,0])
@@ -60,29 +75,49 @@ if __name__ == "__main__":
     timeWaitDetection = config['detection']['time_wait_for_detection']
     getAvalibleCamera = GetAvalibleCamera(broker_uri = broker_uri)
     camera_ids = getAvalibleCamera.run()
-  
-
+    #camera_ids = [1, 2, 3, 4]
+    camera_calibration_ids = []
     subscriptionsDetection = []
-    for camera_id in camera_ids:
+    path_calibration_list = glob.glob("../etc/calibration/hd/*")
+    
+    for cameras_id in camera_ids:
+        for path_calibration in path_calibration_list:
+            if path_calibration.find(f'{cameras_id}') != -1:
+                camera_calibration_ids.append(cameras_id)
+    
+    for camera_calibration_id in camera_calibration_ids:
         subscriptionsDetection.append(
                         SubscriptionDetection(
                             broker_uri = broker_uri, 
                             detectionType = detectionType,
-                            camera_id = camera_id))
-    
+                            camera_id = camera_calibration_id))
+
+
     #Load cameras parameters
-    K1, R1, T1, res1, dis1 = camera_parameters('images/hd/camera1.json')
-    K2, R2, T2, res2, dis2 = camera_parameters('images/hd/camera2.json')
-    K3, R3, T3, res3, dis3 = camera_parameters('images/hd/camera3.json')
-    K4, R4, T4, res4, dis4 = camera_parameters('images/hd/camera4.json')
+    cameraParams = []
+    for cameraID in camera_calibration_ids:
+        cameraParams.append(LoadCameraParameters(calibration = f'../etc/calibration/hd/camera{cameraID}.json',
+                            cameraID = cameraID))
+
+    print(camera_calibration_ids)                      
+
+    K1, R1, T1, res1, dis1 = camera_parameters('../etc/calibration/hd/camera1.json')
+    K2, R2, T2, res2, dis2 = camera_parameters('../etc/calibration/hd/camera2.json')
+    K3, R3, T3, res3, dis3 = camera_parameters('../etc/calibration/hd/camera3.json')
+    K4, R4, T4, res4, dis4 = camera_parameters('../etc/calibration/hd/camera4.json')
 
 
     while True:
 
-        detected_markers = np.array([[0, 0, 0, 0]])
-        centersAruco = np.array([[0, 0, 0, 0, 0, 0, 0, 0]])
-        cornerAruco_1 = np.array([[0, 0, 0, 0, 0, 0, 0, 0]])
-        cornerAruco_2 = np.array([[0, 0, 0, 0, 0, 0, 0, 0]])
+        # detected_markers = np.array([[0, 0, 0, 0]])
+        # centersAruco = np.array([[0, 0, 0, 0, 0, 0, 0, 0]])
+        # cornerAruco_1 = np.array([[0, 0, 0, 0, 0, 0, 0, 0]])
+        # cornerAruco_2 = np.array([[0, 0, 0, 0, 0, 0, 0, 0]])
+
+        detected_markers = [np.zeros(camera_ids[-1], dtype=int)]
+        centersAruco = [np.zeros(camera_ids[-1]*2, dtype=int)]
+        cornerAruco_1 = [np.zeros(camera_ids[-1]*2, dtype=int)]
+        cornerAruco_2 = [np.zeros(camera_ids[-1]*2, dtype=int)]    
         
 
         ################# consume localization (Pixel) #########################
@@ -216,7 +251,7 @@ if __name__ == "__main__":
                 #print('just one detection for marker ',i)
                 M = np.zeros((3,3))
                 RinvT = np.zeros((3,1))
-                d = 0.3
+                d = 0.0
                 # if camera 1 detected the aruco marker i
                 if detected_markers[i-1][0] == 1:
                     M[0:2,0:2] = -identity(2)
@@ -286,7 +321,7 @@ if __name__ == "__main__":
             f.tf.doubles.append(y)
             f.tf.doubles.append(roll_rad)
             f.tf.doubles.append(roll_rad)
-            f.tf.doubles.append(0.000025)
+            f.tf.doubles.append(0.2)
             f.tf.doubles.append(0.2)
 
             message = Message(content=f)
