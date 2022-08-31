@@ -34,8 +34,8 @@ class GetAvalibleCamera:
         return self.cameras
 
 class SubscriptionDetection:
-    def __init__(self, broker_uri, detectionType, camera_id):
+    def __init__(self, broker_uri, detection_type, camera_id):
         self.camera_id = camera_id
         self.channel = Channel(broker_uri)
         self.subscription = Subscription(self.channel)
-        self.subscription.subscribe(f"{detectionType}.{camera_id}.Detection")
+        self.subscription.subscribe(f"{detection_type}.{camera_id}.Detection")
