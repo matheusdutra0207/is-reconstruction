@@ -38,4 +38,6 @@ class SubscriptionDetection:
         self.camera_id = camera_id
         self.channel = Channel(broker_uri)
         self.subscription = Subscription(self.channel)
-        self.subscription.subscribe(f"{detection_type}.{camera_id}.Detection")
+        topic = f"{detection_type}.{camera_id}.Detection"
+        self.subscription.subscribe(topic)
+        log.info(f"Subscription.New topic={topic}")
