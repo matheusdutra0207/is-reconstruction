@@ -15,7 +15,7 @@ log = Logger(name="Service")
 
 if __name__ == "__main__":
     
-    config_file = sys.argv[1] if len(sys.argv) > 1 else '../etc/conf/config.json'
+    config_file = sys.argv[1] if len(sys.argv) > 1 else '../etc/config/config.json'
     config = json.load(open(config_file, 'r'))
     broker_uri = config['broker_uri']
     channel_to_publish = Channel(broker_uri)
@@ -23,11 +23,13 @@ if __name__ == "__main__":
     detection_type = config['detection']['detection_type']
     time_wait_detection = config['detection']['time_wait_for_detection']
     aruco_height = config['detection']['aruco_height']
+    estimate_position_with_only_one_detection = 0 if config['detection']['estimate_position_with_only_one_detection']== "True" else 1
     getAvalibleCamera = GetAvalibleCamera(broker_uri = broker_uri)
     camera_ids = getAvalibleCamera.run()
     calibrated_cameras_ids = []
     subscriptions_aruco_detection = []
-    path_calibrations_list = glob.glob("../etc/calibration/hd/*")
+    path_calibrations = sys.argv[2] if len(sys.argv) > 2 else "../etc/calibration/hd/"
+    path_calibrations_list = glob.glob(f'{path_calibrations}*')
     camera_params = []
     
     for cameras_id in camera_ids:
@@ -43,7 +45,7 @@ if __name__ == "__main__":
                             camera_id = camera_calibration_id))
 
     for calibrated_camera_ids in calibrated_cameras_ids:
-        camera_params.append(LoadCameraParameters(calibration = f'../etc/calibration/hd/camera{calibrated_camera_ids}.json',
+        camera_params.append(LoadCameraParameters(calibration = f'{path_calibrations}camera{calibrated_camera_ids}.json',
                             cameraID = calibrated_camera_ids))
    
     log.info(f"Available cameras for reconstruction: {calibrated_cameras_ids}")   
@@ -61,7 +63,7 @@ if __name__ == "__main__":
                                                     detected_markers,
                                                     aruco_height) 
 
-        if detections > 0:
+        if detections > estimate_position_with_only_one_detection:
             aruco_pose = getArucoPose(detections, 
                                     recontrued_points, 
                                     detected_markers,
@@ -70,5 +72,5 @@ if __name__ == "__main__":
             message = Message(content=aruco_pose)
             topic_to_publish = f"reconstruction.{detection_id}.ArUco"
             channel_to_publish.publish(message, topic= topic_to_publish)
-            log.info(f"New pose published on: {topic_to_publish}") 
+            #log.info(f"New pose published on: {topic_to_publish}") 
                                                         
