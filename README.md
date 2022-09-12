@@ -2,6 +2,13 @@
 
 This microsservice uses the detections of the [ArUco Detection](https://github.com/labviros/is-aruco-detector) to estimate the 3D poses of the Markers. 
 
+## Dependencies:
+
+[is-broker-events:](https://github.com/labviros/is-broker-events) Used to check which camera is available.
+
+[is-aruco-detector:](https://github.com/labviros/is-aruco-detector) Used to get detections from each camera.
+
+
 
 ## Streams:
 
