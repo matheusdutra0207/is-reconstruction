@@ -57,38 +57,21 @@ def getArucoPose(detections,
                 recontrued_points, 
                 detected_markers,
                 aruco_height):   
-    if detections > 1:
-        
-        x = recontrued_points[0][0][0]
-        y = recontrued_points[0][1][0]
-        z = recontrued_points[0][2][0]
-        x_p2p1 = recontrued_points[2][0][0] - recontrued_points[1][0][0]
-        y_p2p1 = recontrued_points[2][1][0] - recontrued_points[1][1][0]
-        yaw_rad = np.arctan2(y_p2p1, x_p2p1)
-        yaw_deg = (180*yaw_rad)/pi  
-        log.info(f"New pose estimated: x = {x:.3f}, y = {y:.3f}, theta = {yaw_deg:.3f}, recontrued by = {detections} cameras")
-        aruco_pose = Pose()
-        aruco_pose.position.x = x
-        aruco_pose.position.y = y
-        aruco_pose.position.z = z
-        aruco_pose.orientation.roll = 0
-        aruco_pose.orientation.pitch = 0
-        aruco_pose.orientation.yaw = yaw_rad
-
-    elif detections == 1:
-        x = recontrued_points[0][0][0]
-        y = recontrued_points[0][1][0]
-        x_p2p1 = recontrued_points[2][0][0] - recontrued_points[1][0][0]
-        y_p2p1 = recontrued_points[2][1][0] - recontrued_points[1][1][0]
-        yaw_rad = np.arctan2(y_p2p1, x_p2p1)
-        yaw_deg = (180*yaw_rad)/pi
-        log.info(f"New pose estimated: x = {x:.3f}, y = {y:.3f}, theta = {yaw_deg:.3f}, recontrued by = {detections} cameras")
-        aruco_pose = Pose()
-        aruco_pose.position.x = x
-        aruco_pose.position.y = y
-        aruco_pose.position.z = aruco_height
-        aruco_pose.orientation.roll = 0
-        aruco_pose.orientation.pitch = 0
-        aruco_pose.orientation.yaw = yaw_rad     
+                
+    x = recontrued_points[0][0][0]
+    y = recontrued_points[0][1][0]
+    z =  aruco_height if detections == 1 else econtrued_points[0][2][0]
+    x_p2p1 = recontrued_points[2][0][0] - recontrued_points[1][0][0]
+    y_p2p1 = recontrued_points[2][1][0] - recontrued_points[1][1][0]
+    yaw_rad = np.arctan2(y_p2p1, x_p2p1)
+    yaw_deg = (180*yaw_rad)/pi  
+    log.info(f"New pose estimated: x = {x:.3f}, y = {y:.3f}, theta = {yaw_deg:.3f}, recontrued by = {detections} cameras")
+    aruco_pose = Pose()
+    aruco_pose.position.x = x
+    aruco_pose.position.y = y
+    aruco_pose.position.z = z
+    aruco_pose.orientation.roll = 0
+    aruco_pose.orientation.pitch = 0
+    aruco_pose.orientation.yaw = yaw_rad                   
 
     return aruco_pose    
