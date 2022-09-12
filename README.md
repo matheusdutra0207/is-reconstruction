@@ -8,7 +8,24 @@ This microsservice uses the detections of the [ArUco Detection](https://github.c
 
 [is-aruco-detector:](https://github.com/labviros/is-aruco-detector) Used to get detections from each camera.
 
+## Calibrations:
 
+To change the calibration correctly in the deployment file, the following steps must be followed:
+
+- Create a repository similar to this [link](https://github.com/vinihernech/camera-calibrations), where the calibration files for each camera must follow the name pattern `camera{camera_id}.json`
+
+- In repository, put the link of the repository that contains the calibration
+
+ ``` 
+gitRepo:
+  repository: "https://repository-with-calibration"
+ ```
+ - Change the directory to the location where the calibration is.
+ 
+ ``` 
+command: ["python"]
+args: ["service.py", "../etc/config/options.json", "../etc/calibration/hd/path-where-is-the-calibration"]
+ ```
 
 ## Streams:
 
