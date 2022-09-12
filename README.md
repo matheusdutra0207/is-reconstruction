@@ -31,5 +31,7 @@ args: ["service.py", "../etc/config/options.json", "../etc/calibration/hd/path-w
 
 | Name | ⇒ Input | Output  ⇒ | Description |
 | ---- | ------- | --------- | ----------- |
-| reconstruction.ArUco | :incoming_envelope: **topic:** `ArUco.{camera_ids}.Detection` <br> :gem: **schema:** [ObjectAnnotations] | :incoming_envelope: **topic:**  `reconstruction.{ArUco_id}.ArUco` <br> :gem: **schema:** [Pose] | Uses ArUco detector detections to estimate ArUco marker pose. |
+| reconstruction.ArUco | :incoming_envelope: **topic:** `ArUco.{camera_ids}.Detection` <br> :gem: **schema:** [ObjectAnnotations](https://github.com/labviros/is-msgs/tree/master/docs#is.vision.ObjectAnnotations) | :incoming_envelope: **topic:**  `reconstruction.{ArUco_id}.ArUco` <br> :gem: **schema:** [Pose](https://github.com/labviros/is-msgs/tree/master/docs#is.common.Pose) | Uses ArUco detector detections to estimate ArUco marker pose. |
+
+## Examples:
 
