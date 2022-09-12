@@ -1,6 +1,6 @@
 # Is Reconstruction
 
-This microsservice uses the detections of the [ArUco Detection](https://github.com/labviros/is-aruco-detector) to estimate the 3D poses of the Markers. 
+This microsservice uses the detections of the [ArUco Detection](https://github.com/labviros/is-aruco-detector) to estimate the 3D poses of the Markers. To estimate the marker's pose, this microservice uses detections from all cameras that are viewing it.
 
 ## Dependencies:
 
