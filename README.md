@@ -35,3 +35,5 @@ args: ["service.py", "../etc/config/options.json", "../etc/calibration/hd/path-w
 
 ## Examples:
 
+In [exemples/consume/consume.py](https://github.com/matheusdutra0207/is-reconstruction/blob/main/exemples/consume/consume.py) is a simple consume to display the AruCo pose.
+
