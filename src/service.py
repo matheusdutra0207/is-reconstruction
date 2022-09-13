@@ -5,16 +5,16 @@ import glob
 from is_wire.core import Message, Subscription, Logger, Channel
 from is_msgs.image_pb2 import ObjectAnnotations, ObjectAnnotation
 
-from subscription_manager import GetAvalibleCamera, SubscriptionDetection
-from get_points_pixel import arucoPointsPixel
-from reconstruction import getReconstruedPoints, getArucoPose
-from camera_parameters import LoadCameraParameters
-
+from reconstruction.subscription_manager import GetAvalibleCamera, SubscriptionDetection
+from reconstruction.get_points_pixel import arucoPointsPixel
+#from reconstruction import getReconstruedPoints, getArucoPose
+from reconstruction.reconstruction import Reconstruction
+from reconstruction.camera_parameters import LoadCameraParameters
 
 log = Logger(name="Service")
 
-if __name__ == "__main__":
-    
+
+def main():
     config_file = sys.argv[1] if len(sys.argv) > 1 else '../etc/config/config.json'
     config = json.load(open(config_file, 'r'))
     broker_uri = config['broker_uri']
@@ -44,11 +44,13 @@ if __name__ == "__main__":
                             detection_type = detection_type,
                             camera_id = camera_calibration_id))
 
-    for calibrated_camera_ids in calibrated_cameras_ids:
-        camera_params.append(LoadCameraParameters(calibration = f'{path_calibrations}camera{calibrated_camera_ids}.json',
-                            cameraID = calibrated_camera_ids))
+    for calibrated_camera_id in calibrated_cameras_ids:
+        camera_params.append(LoadCameraParameters(calibration = f'{path_calibrations}camera{calibrated_camera_id}.json',
+                            cameraID = calibrated_camera_id))
    
     log.info(f"Available cameras for reconstruction: {calibrated_cameras_ids}")   
+
+    reconstruction = Reconstruction()
 
     while True:
 
@@ -57,14 +59,14 @@ if __name__ == "__main__":
                                                                         time_wait_detection,
                                                                         detection_id)
 
-        recontrued_points = getReconstruedPoints(aruco_points_pixel, 
+        recontrued_points = reconstruction.getReconstruedPoints(aruco_points_pixel, 
                                                     camera_params, 
                                                     detections,
                                                     detected_markers,
                                                     aruco_height) 
 
         if detections > estimate_position_with_only_one_detection:
-            aruco_pose = getArucoPose(detections, 
+            aruco_pose = reconstruction.getArucoPose(detections, 
                                     recontrued_points, 
                                     detected_markers,
                                     aruco_height)
@@ -74,3 +76,5 @@ if __name__ == "__main__":
             channel_to_publish.publish(message, topic= topic_to_publish)
             #log.info(f"New pose published on: {topic_to_publish}") 
                                                         
+if __name__ == "__main__":
+    main()
