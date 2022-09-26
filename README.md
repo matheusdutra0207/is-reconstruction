@@ -1,14 +1,16 @@
-# Is Reconstruction
+# About
 
 This microsservice uses the detections of the [ArUco Detection](https://github.com/labviros/is-aruco-detector) to estimate the 3D poses of the Markers. To estimate the marker's pose, this microservice uses detections from all cameras that are viewing it.
 
-## Dependencies:
+# Dependencies:
 
 [is-broker-events:](https://github.com/labviros/is-broker-events) Used to check which camera is available.
 
 [is-aruco-detector:](https://github.com/labviros/is-aruco-detector) Used to get detections from each camera.
 
-## Calibrations:
+# Configuration
+
+### Calibrations:
 
 To change the calibration correctly in the deployment file, the following steps must be followed:
 
@@ -27,13 +29,15 @@ command: ["python"]
 args: ["service.py", "../etc/config/options.json", "../etc/calibration/hd/path-where-is-the-calibration"]
  ```
 
-## Streams:
+# Usage
+
+### Streams:
 
 | Name | ⇒ Input | Output  ⇒ | Description |
 | ---- | ------- | --------- | ----------- |
 | reconstruction.ArUco | :incoming_envelope: **topic:** `ArUco.{camera_ids}.Detection` <br> :gem: **schema:** [ObjectAnnotations](https://github.com/labviros/is-msgs/tree/master/docs#is.vision.ObjectAnnotations) | :incoming_envelope: **topic:**  `reconstruction.{ArUco_id}.ArUco` <br> :gem: **schema:** [Pose](https://github.com/labviros/is-msgs/tree/master/docs#is.common.Pose) | Uses ArUco detector detections to estimate ArUco marker pose. |
 
-## Examples:
+# Examples:
 
 In [exemples/consume/consume.py](https://github.com/matheusdutra0207/is-reconstruction/blob/main/exemples/consume/consume.py) is a simple consume to display the AruCo pose.
 
