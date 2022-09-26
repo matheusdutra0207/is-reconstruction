@@ -31,6 +31,29 @@ args: ["service.py", "../etc/config/options.json", "../etc/calibration/hd/path-w
 
 # Usage
 
+### Kubernetes
+
+Make sure you have [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed and the right `~/.kube/config` file to be able to interact with the cluster.
+
+Deploy the stream application:
+
+```bash
+kubectl apply -f etc/k8s/deployment.yaml
+```
+
+The `.yaml` file describes two things:
+* a deployment;
+* a configmap;
+
+A deployment is a way to run our application and guarantee that an N number of replicas will be running. The configmap allows load the options you desires when deploying into the kubernetes platform. See more about [deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) and [confimap](https://kubernetes.io/docs/concepts/configuration/configmap/).
+
+<!-- Links -->
+
+[Image]: https://github.com/labviros/is-msgs/tree/master/docs/README.md#is.vision.Image
+[ObjectAnnotations]: https://github.com/labviros/is-msgs/tree/master/docs/README.md#is.vision.ObjectAnnotations
+[OpenCV]: https://docs.opencv.org/3.4.1/d7/d8b/tutorial_py_face_detection.html
+
+
 ### Streams:
 
 | Name | ⇒ Input | Output  ⇒ | Description |
