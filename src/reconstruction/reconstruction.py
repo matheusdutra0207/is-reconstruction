@@ -54,7 +54,7 @@ class Reconstruction:
                         index_y = id_camera + (id_camera - 1)                             
                         M[0:2,0:2] = -identity(2)
                         m = np.array([aruco_point_pixel[0][index_x],aruco_point_pixel[0][index_y],1])
-                        M[0:3,2] = np.dot(camera_params[i].KRinv,m)
+                        M[0:3,2] = np.dot(camera_params[i].KRinv,m)                 
                         RinvT[0:3,0] = camera_params[i].RinvT[0:3,0] + np.array([0,0,aruco_height])                                                     
                 M_inv = np.linalg.inv(M)
                 recontrued_point = np.dot(M_inv,RinvT)    
