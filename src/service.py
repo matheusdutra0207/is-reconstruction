@@ -46,12 +46,10 @@ def main():
                             camera_id = camera_calibration_id))
 
     camera_params = list(np.zeros(calibrated_cameras_ids[-1], dtype=int))
-    print(camera_params)
     for calibrated_camera_id in calibrated_cameras_ids:
         camera_params[calibrated_camera_id - 1] = LoadCameraParameters(calibration = f'{path_calibrations}camera{calibrated_camera_id}.json',
                             cameraID = calibrated_camera_id)
 
-    print(camera_params)
     log.info(f"Available cameras for reconstruction: {calibrated_cameras_ids}")   
 
     reconstruction = Reconstruction()
