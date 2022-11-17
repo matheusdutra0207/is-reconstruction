@@ -76,6 +76,6 @@ class Reconstruction:
         self.aruco_pose.orientation.roll = 0
         self.aruco_pose.orientation.pitch = 0
         self.aruco_pose.orientation.yaw = yaw_rad                   
-        log.info(f"New pose estimated: x = {self.aruco_pose.position.x:.3f}, y = {self.aruco_pose.position.y:.3f}, theta = {self.aruco_pose.orientation.yaw :.3f}, recontrued by = {detections} cameras")
+        log.info(f"New pose estimated: x = {self.aruco_pose.position.x:.3f}, y = {self.aruco_pose.position.y:.3f}, theta = {yaw_deg :.3f}, recontrued by = {detections} cameras")   
 
         return self.aruco_pose    
