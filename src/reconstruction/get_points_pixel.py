@@ -20,14 +20,11 @@ def arucoPointsPixel(calibrated_cameras_ids,
                     subscriptions_aruco_detection, 
                     time_wait_detection,
                     detection_id):
-
-    if calibrated_cameras_ids[-1] == 0:
-        print("aqui")
-    else:    
-        detected_markers = [np.zeros(calibrated_cameras_ids[-1] + 1, dtype=int)]
-        centerAruco = [np.zeros(calibrated_cameras_ids[-1]*2 + 2, dtype=int)]
-        cornerAruco_1 = [np.zeros(calibrated_cameras_ids[-1]*2 + 2 , dtype=int)]
-        cornerAruco_2 = [np.zeros(calibrated_cameras_ids[-1]*2 + 2, dtype=int)]    
+  
+    detected_markers = [np.zeros(calibrated_cameras_ids[-1] + 1, dtype=int)]
+    centerAruco = [np.zeros(calibrated_cameras_ids[-1]*2 + 2, dtype=int)]
+    cornerAruco_1 = [np.zeros(calibrated_cameras_ids[-1]*2 + 2 , dtype=int)]
+    cornerAruco_2 = [np.zeros(calibrated_cameras_ids[-1]*2 + 2, dtype=int)]    
 
     for subscription_aruco_detection in subscriptions_aruco_detection:
         reply = None
