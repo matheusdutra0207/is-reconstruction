@@ -12,6 +12,7 @@ from reconstruction.get_points_pixel import arucoPointsPixel
 from reconstruction.reconstruction import Reconstruction
 from reconstruction.camera_parameters import LoadCameraParameters
 
+import time 
 log = Logger(name="Service")
 
 
@@ -32,7 +33,10 @@ def main():
     path_calibrations = sys.argv[2] if len(sys.argv) > 2 else "../etc/calibration/hd/"
     path_calibrations_list = glob.glob(f'{path_calibrations}*')
     camera_params = []
-    
+    # camera_params =  camera_params.append(LoadCameraParameters(calibration = f'{path_calibrations}camera{3}.json',
+    #             cameraID = 3))
+
+
     for cameras_id in camera_ids:
         for path_calibration in path_calibrations_list:
             if path_calibration.find(f'{cameras_id}') != -1:
@@ -45,17 +49,17 @@ def main():
                             detection_type = detection_type,
                             camera_id = camera_calibration_id))
 
-    camera_params = list(np.zeros(calibrated_cameras_ids[-1], dtype=int))
-    for calibrated_camera_id in calibrated_cameras_ids:
-        camera_params[calibrated_camera_id - 1] = LoadCameraParameters(calibration = f'{path_calibrations}camera{calibrated_camera_id}.json',
-                            cameraID = calibrated_camera_id)
+    camera_params = list(np.zeros(calibrated_cameras_ids[-1] + 1, dtype=int)) 
+    for calibrated_camera_id in calibrated_cameras_ids:  
+            camera_params[calibrated_camera_id] = LoadCameraParameters(calibration = f'{path_calibrations}camera{calibrated_camera_id}.json',
+                                cameraID = calibrated_camera_id)
 
     log.info(f"Available cameras for reconstruction: {calibrated_cameras_ids}")   
-
     reconstruction = Reconstruction()
 
     while True:
-
+        start_loop = time.time()
+        
         aruco_points_pixel, detections, detected_markers = arucoPointsPixel(calibrated_cameras_ids, 
                                                                         subscriptions_aruco_detection, 
                                                                         time_wait_detection,
@@ -71,11 +75,13 @@ def main():
             aruco_pose = reconstruction.getArucoPose(detections, 
                                     recontrued_points, 
                                     detected_markers,
-                                    aruco_height)
+                                    aruco_height,
+                                    start_loop)
 
             message = Message(content=aruco_pose)
             topic_to_publish = f"reconstruction.{detection_id}.ArUco"
             channel_to_publish.publish(message, topic= topic_to_publish)
+
             #log.info(f"New pose published on: {topic_to_publish}") 
                                                         
 if __name__ == "__main__":

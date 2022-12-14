@@ -3,7 +3,7 @@ import numpy as np
 from numpy.core.numeric import identity
 from is_msgs.common_pb2 import Pose
 from math import pi, cos, sin, acos
-
+import time 
 
 log = Logger(name="Reconstruction")
 
@@ -31,9 +31,9 @@ class Reconstruction:
                 col = 3
                 for i in range(0, len(detected_markers[0])):
                     if detected_markers[0][i] == 1:
-                        id_camera = i + 1
-                        index_x = id_camera + (id_camera - 2)
-                        index_y = id_camera + (id_camera - 1)                        
+                        id_camera = i
+                        index_x = id_camera*2 #(id_camera - 2)
+                        index_y = id_camera*2 + 1 #(id_camera - 1)                           
                         M[lin:(lin+3),0:3] = -identity(3)
                         m = np.array([aruco_point_pixel[0][index_x],aruco_point_pixel[0][index_y],1])
                         M[lin:(lin+3),col] = np.dot(camera_params[i].KRinv,m)
@@ -42,6 +42,7 @@ class Reconstruction:
                         col = col + 1                        
                 M_inv = np.linalg.pinv(M)
                 recontrued_point = np.dot(M_inv,RinvT)
+
                 self.recontrued_points.append(recontrued_point)
 
             elif (detections == 1): # if only one camera saw the ArUco marker
@@ -49,22 +50,24 @@ class Reconstruction:
                 RinvT = np.zeros((3,1))
                 for i in range(0, len(detected_markers[0])):
                     if detected_markers[0][i] == 1:
-                        id_camera = i + 1
-                        index_x = id_camera + (id_camera - 2)
-                        index_y = id_camera + (id_camera - 1)                             
+                        id_camera = i
+                        index_x = id_camera*2 #(id_camera - 2)
+                        index_y = id_camera*2 + 1 #(id_camera - 1)   
                         M[0:2,0:2] = -identity(2)
                         m = np.array([aruco_point_pixel[0][index_x],aruco_point_pixel[0][index_y],1])
-                        M[0:3,2] = np.dot(camera_params[i].KRinv,m)                 
-                        RinvT[0:3,0] = camera_params[i].RinvT[0:3,0] + np.array([0,0,aruco_height])                                                     
+                        M[0:3,2] = np.dot(camera_params[id_camera].KRinv,m)                 
+                        RinvT[0:3,0] = camera_params[id_camera].RinvT[0:3,0] + np.array([0,0,aruco_height])                                                  
                 M_inv = np.linalg.inv(M)
                 recontrued_point = np.dot(M_inv,RinvT)    
-                self.recontrued_points.append(recontrued_point)        
+
+                self.recontrued_points.append(recontrued_point)       
         return self.recontrued_points
 
     def getArucoPose(self, detections, 
                     recontrued_points, 
                     detected_markers,
-                    aruco_height):   
+                    aruco_height,
+                    start_loop):   
                  
         x_p2p1 = self.recontrued_points[2][0][0] - self.recontrued_points[1][0][0]
         y_p2p1 = self.recontrued_points[2][1][0] - self.recontrued_points[1][1][0]
@@ -75,7 +78,8 @@ class Reconstruction:
         self.aruco_pose.position.z = aruco_height if detections == 1 else self.recontrued_points[0][2][0]
         self.aruco_pose.orientation.roll = 0
         self.aruco_pose.orientation.pitch = 0
-        self.aruco_pose.orientation.yaw = yaw_rad                   
+        self.aruco_pose.orientation.yaw = yaw_rad                 
         log.info(f"New pose estimated: x = {self.aruco_pose.position.x:.3f}, y = {self.aruco_pose.position.y:.3f}, theta = {yaw_deg :.3f}, recontrued by = {detections} cameras")   
-
+        frequency = 1/(time.time() - start_loop)
+        print(frequency)
         return self.aruco_pose    

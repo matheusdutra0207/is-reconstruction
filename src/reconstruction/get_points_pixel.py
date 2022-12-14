@@ -21,10 +21,13 @@ def arucoPointsPixel(calibrated_cameras_ids,
                     time_wait_detection,
                     detection_id):
 
-    detected_markers = [np.zeros(calibrated_cameras_ids[-1], dtype=int)]
-    centerAruco = [np.zeros(calibrated_cameras_ids[-1]*2, dtype=int)]
-    cornerAruco_1 = [np.zeros(calibrated_cameras_ids[-1]*2, dtype=int)]
-    cornerAruco_2 = [np.zeros(calibrated_cameras_ids[-1]*2, dtype=int)]    
+    if calibrated_cameras_ids[-1] == 0:
+        print("aqui")
+    else:    
+        detected_markers = [np.zeros(calibrated_cameras_ids[-1] + 1, dtype=int)]
+        centerAruco = [np.zeros(calibrated_cameras_ids[-1]*2 + 2, dtype=int)]
+        cornerAruco_1 = [np.zeros(calibrated_cameras_ids[-1]*2 + 2 , dtype=int)]
+        cornerAruco_2 = [np.zeros(calibrated_cameras_ids[-1]*2 + 2, dtype=int)]    
 
     for subscription_aruco_detection in subscriptions_aruco_detection:
         reply = None
@@ -45,9 +48,10 @@ def arucoPointsPixel(calibrated_cameras_ids,
                                                 [vertices[3].x,  vertices[3].y] 
                                                 ]]])
                         corners, center = sortCorners(detection_id, vertices)
-                        detected_markers[0][subscription_aruco_detection.camera_id - 1] = 1  
-                        index_x = subscription_aruco_detection.camera_id + (subscription_aruco_detection.camera_id - 2)
-                        index_y = subscription_aruco_detection.camera_id + (subscription_aruco_detection.camera_id - 1) 
+                        detected_markers[0][subscription_aruco_detection.camera_id] = 1
+                        index_x = subscription_aruco_detection.camera_id*2   
+                        index_y = subscription_aruco_detection.camera_id*2 + 1 
+
                         centerAruco[0][index_x] = center[0][0]
                         centerAruco[0][index_y] = center[0][1]
 
@@ -55,8 +59,9 @@ def arucoPointsPixel(calibrated_cameras_ids,
                         cornerAruco_1[0][index_y] = corners[0][0][0][1]
 
                         cornerAruco_2[0][index_x] = corners[0][0][1][0]
-                        cornerAruco_2[0][index_y] = corners[0][0][1][1]                            
+                        cornerAruco_2[0][index_y] = corners[0][0][1][1] 
 
-    aruco_points_pixel = [centerAruco, cornerAruco_1, cornerAruco_2]   
+                
+    aruco_points_pixel = [centerAruco, cornerAruco_1, cornerAruco_2] 
     detections = len(np.where(detected_markers[0][:] == 1)[0])
     return aruco_points_pixel, detections, detected_markers
