@@ -2,6 +2,7 @@ from is_wire.core import Logger
 import numpy as np
 from numpy.core.numeric import identity
 from is_msgs.common_pb2 import Pose
+from is_msgs.camera_pb2 import FrameTransformations, FrameTransformation
 from math import pi, cos, sin, acos
 import time 
 
@@ -78,8 +79,14 @@ class Reconstruction:
         self.aruco_pose.position.z = aruco_height if detections == 1 else self.recontrued_points[0][2][0]
         self.aruco_pose.orientation.roll = 0
         self.aruco_pose.orientation.pitch = 0
-        self.aruco_pose.orientation.yaw = yaw_rad                 
+        self.aruco_pose.orientation.yaw = yaw_rad   
+
+        f = FrameTransformation()          
+        f.tf.doubles.append(self.aruco_pose.position.x )
+        f.tf.doubles.append(self.aruco_pose.position.y )
+        f.tf.doubles.append(self.aruco_pose.orientation.yaw)
+        f.tf.doubles.append(self.aruco_pose.orientation.yaw)                      
         log.info(f"New pose estimated: x = {self.aruco_pose.position.x:.3f}, y = {self.aruco_pose.position.y:.3f}, theta = {yaw_deg :.3f}, recontrued by = {detections} cameras")   
-        frequency = 1/(time.time() - start_loop)
-        print(frequency)
-        return self.aruco_pose    
+        # frequency = 1/(time.time() - start_loop)
+        # print(frequency)
+        return f  

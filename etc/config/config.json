@@ -1,5 +1,5 @@
 {
-    "broker_uri": "amqp://10.10.2.2:30000",
+    "broker_uri": "amqp://10.10.0.68:30000",
     "detection":{
         "id":5,
         "detection_type":"ArUco",

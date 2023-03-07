@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: is-reconstruction
-          image: matheusdutra0207/is-reconstruction:v1
+          image: matheusdutra0207/is-reconstruction:robot-controller
           command: ["python"]
           args: ["service.py", "../etc/config/options.json", "../etc/calibration/hd/camera-calibrations/labsea/"]
           imagePullPolicy: Always
@@ -54,4 +54,4 @@ spec:
           gitRepo:
             repository: "https://github.com/vinihernech/camera-calibrations"
             # revision: a9ad7329bf14d4cf161f5e3f21ceb7297708b210
-            revision: f16b9e25d879811a1e8dcbbfc95ff5470dd8bb06                
+            revision: 15c13c541bb6a39f27992b7ab1762b5b56590f25                
