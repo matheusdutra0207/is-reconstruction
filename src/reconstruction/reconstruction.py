@@ -81,5 +81,5 @@ class Reconstruction:
         self.aruco_pose.orientation.yaw = yaw_rad                 
         log.info(f"New pose estimated: x = {self.aruco_pose.position.x:.3f}, y = {self.aruco_pose.position.y:.3f}, theta = {yaw_deg :.3f}, recontrued by = {detections} cameras")   
         frequency = 1/(time.time() - start_loop)
-        print(frequency)
+        # print(frequency)
         return self.aruco_pose    

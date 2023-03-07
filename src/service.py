@@ -79,7 +79,7 @@ def main():
                                     start_loop)
 
             message = Message(content=aruco_pose)
-            topic_to_publish = f"reconstruction.{detection_id}.ArUco"
+            topic_to_publish = f"reconstruction.{detection_id}.{detection_type}"
             channel_to_publish.publish(message, topic= topic_to_publish)
 
             #log.info(f"New pose published on: {topic_to_publish}") 
