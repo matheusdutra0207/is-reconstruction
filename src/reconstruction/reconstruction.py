@@ -63,7 +63,8 @@ class Reconstruction:
                 self.recontrued_points.append(recontrued_point)       
         return self.recontrued_points
 
-    def getArucoPose(self, detections, 
+
+    def __getArucoPose(self, detections, 
                     recontrued_points, 
                     detected_markers,
                     aruco_height,
@@ -82,4 +83,48 @@ class Reconstruction:
         log.info(f"New pose estimated: x = {self.aruco_pose.position.x:.3f}, y = {self.aruco_pose.position.y:.3f}, theta = {yaw_deg :.3f}, recontrued by = {detections} cameras")   
         frequency = 1/(time.time() - start_loop)
         # print(frequency)
+        return self.aruco_pose  
+
+
+    def __getRobisPose(self, detections, 
+                    recontrued_points, 
+                    detected_markers,
+                    aruco_height,
+                    start_loop):         
+        self.aruco_pose.position.x = self.recontrued_points[0][0][0]
+        self.aruco_pose.position.y = self.recontrued_points[0][1][0]
+        self.aruco_pose.position.z = 0
+        self.aruco_pose.orientation.roll = 0
+        self.aruco_pose.orientation.pitch = 0
+        self.aruco_pose.orientation.yaw = 0                 
+        log.info(f"New pose estimated: x = {self.aruco_pose.position.x:.3f}, y = {self.aruco_pose.position.y:.3f}, theta = {0 :.3f}, recontrued by = {detections} cameras")   
+        frequency = 1/(time.time() - start_loop)
+        # print(frequency)
         return self.aruco_pose    
+
+    def getPose(self, detections, 
+                    recontrued_points, 
+                    detected_markers,
+                    aruco_height,
+                    start_loop,
+                    detection_type): 
+
+        if detection_type == "Robis":
+            return self.__getRobisPose(detections, 
+                            recontrued_points, 
+                            detected_markers,
+                            aruco_height,
+                            start_loop)
+
+        elif detection_type == "ArUco":
+            return self.__getArucoPose(detections, 
+                            recontrued_points, 
+                            detected_markers,
+                            aruco_height,
+                            start_loop)
+        else:
+            return self.__getArucoPose(detections, 
+                            recontrued_points, 
+                            detected_markers,
+                            aruco_height,
+                            start_loop)

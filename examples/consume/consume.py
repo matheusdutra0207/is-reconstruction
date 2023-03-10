@@ -12,10 +12,11 @@ if __name__ == '__main__':
     config = json.load(open(config_file, 'r'))
     broker_uri = config['broker_uri']
     detection_id = config['detection']['id']
+    detection_type = config['detection']['detection_type']
     
     channel = Channel(broker_uri)
     subscription = Subscription(channel)
-    subscription.subscribe(topic=f"reconstruction.{detection_id}.ArUco")
+    subscription.subscribe(topic=f"reconstruction.{detection_id}.{detection_type}")
     while True:
         try:
             message = channel.consume(timeout = 0.01)

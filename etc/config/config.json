@@ -1,8 +1,8 @@
 {
-    "broker_uri": "amqp://10.10.2.2:30000",
+    "broker_uri": "amqp://10.10.0.68:30000",
     "detection":{
-        "id":5,
-        "detection_type":"ArUco",
+        "id":1,
+        "detection_type":"Robis",
         "aruco_height": 0.0,
         "time_wait_for_detection":0.05,
         "estimate_position_with_only_one_detection": "True"

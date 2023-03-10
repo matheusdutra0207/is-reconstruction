@@ -72,13 +72,14 @@ def main():
                                                     aruco_height) 
 
         if detections > estimate_position_with_only_one_detection:
-            aruco_pose = reconstruction.getArucoPose(detections, 
+            pose = reconstruction.getPose(detections, 
                                     recontrued_points, 
                                     detected_markers,
                                     aruco_height,
-                                    start_loop)
+                                    start_loop,
+                                    detection_type)
 
-            message = Message(content=aruco_pose)
+            message = Message(content=pose)
             topic_to_publish = f"reconstruction.{detection_id}.{detection_type}"
             channel_to_publish.publish(message, topic= topic_to_publish)
 
